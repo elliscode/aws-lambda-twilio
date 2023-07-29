@@ -12,19 +12,19 @@ The following three environment variables are required:
 
 `TWILIO_AUTH_TOKEN` &mdash; can be found on the Twilio Console page under **Auth Token**
 
-`DEFAULT_MESSAGE_SENDER` &mdash; can be found on the Twilio Console page under **My Twilio phone number**
+`DEFAULT_MESSAGE_SENDER` &mdash; can be found on the Twilio Console page under **My Twilio phone number**, should be in the format of `+15551235555`
 
 ## Test Event
 
 Once you create the lambda function, paste the code from `lambda_handler.py` into your AWS lambda code editor, and hit the **Deploy** button, you can test that it is working by using the following test event.
 
-**Please replace the 5555555555 with your own phone number**
+**Please replace the +15551235555 with your own phone number**
 
 ```
 {
   "Records": [
     {
-      "body": "{\"message\": \"Testing SMS from mock SQS event\", \"phone\": \"5555555555\"}"
+      "body": "{\"message\": \"Testing SMS from mock SQS event\", \"phone\": \"+15551235555\"}"
     }
   ]
 }
@@ -43,7 +43,7 @@ import boto3
 sqs = boto3.client("sqs")
 message_body = {
     "message": "Testing SMS from real SQS queue",
-    "phone": "5555555555",
+    "phone": "+15551235555",
 }
 sqs.send_message(
     QueueUrl="https://sqs.us-east-1.amazonaws.com/acct_id/queue_name",

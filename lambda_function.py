@@ -2,6 +2,7 @@ import json
 import http.client
 import base64
 import os
+import urllib.parse
 
 TWILIO_ACCT_SID = os.getenv('TWILIO_ACCT_SID')
 TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
@@ -17,17 +18,15 @@ def lambda_handler(event, context):
     try:
         for message in event['Records']:
             json_message = json.loads(message['body'])
-            message_body = json_message['message']
-            message_recipient = json_message['phone']
-            message_sender = json_message.get('sender', DEFAULT_MESSAGE_SENDER)
+            message_body = urllib.parse.quote(json_message['message'])
+            message_recipient = urllib.parse.quote(json_message['phone'])
+            message_sender = urllib.parse.quote(json_message.get('sender', DEFAULT_MESSAGE_SENDER))
             base64_encoded_auth = base64.b64encode(f'{TWILIO_ACCT_SID}:{TWILIO_AUTH_TOKEN}'.encode('utf-8')).decode('utf-8')
             conn = http.client.HTTPSConnection("api.twilio.com")
-            payload = f'Body={message_body}&From=%2B1{message_sender}&To=%2B1{message_recipient}'
+            payload = f'Body={message_body}&From={message_sender}&To={message_recipient}'
             headers = {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': f'Basic {base64_encoded_auth}',
-                'Accept': '*/*',
-                'Accept-Encoding': 'gzip, deflate, br',
             }
             conn.request("POST", f"/2010-04-01/Accounts/{TWILIO_ACCT_SID}/Messages.json", payload, headers)
             res = conn.getresponse()
