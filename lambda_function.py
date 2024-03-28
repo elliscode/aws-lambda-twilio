@@ -9,6 +9,8 @@ TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 DEFAULT_MESSAGE_SENDER = os.getenv('DEFAULT_MESSAGE_SENDER')
 
 def lambda_handler(event, context):
+    print(json.dumps(event))
+
     if 'Records' not in event:
         return {
             'statusCode': 500,
@@ -37,6 +39,8 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'body': f'Sent messages'
         }
+    except:
+        pass
     finally:
         pass
         
