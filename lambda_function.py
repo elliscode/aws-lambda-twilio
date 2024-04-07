@@ -22,7 +22,10 @@ def lambda_handler(event, context):
             json_message = json.loads(message['body'])
             message_body = urllib.parse.quote(json_message['message'])
             message_recipient = urllib.parse.quote(json_message['phone'])
-            message_sender = urllib.parse.quote(json_message.get('sender', DEFAULT_MESSAGE_SENDER))
+            message_sender = json_message.get('sender')
+            if not message_sender:  # doing it this way due to the fact that get still returns null if the field is present but the value is null
+                message_sender = DEFAULT_MESSAGE_SENDER
+            message_sender = urllib.parse.quote(message_sender)
             base64_encoded_auth = base64.b64encode(f'{TWILIO_ACCT_SID}:{TWILIO_AUTH_TOKEN}'.encode('utf-8')).decode('utf-8')
             conn = http.client.HTTPSConnection("api.twilio.com")
             payload = f'Body={message_body}&From={message_sender}&To={message_recipient}'
